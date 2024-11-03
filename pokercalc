@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+import random
+
+def string_to_card(string):
+    try:
+        c = ''
+        if len(string) > 2:
+            raise Exception
+        if string[0] not in [str(x) for x in range(2,11)] + ['J','Q','K','A']:
+            raise Exception
+        if string[1] not in [x[0].lower() for x in ['Spades', 'Hearts', 'Clubs', 'Diamonds']]:
+            raise Exception
+        match string[1]:
+            case 'c': c = 'Clubs'
+            case 'd': c = 'Diamonds'
+            case 'h': c=  'Hearts'
+            case 's': c = 'Spades'
+        return Card(string[0], c)
+    except:
+        print("String is not compatible with cards")
+        exit(1)
+
+def card_position_unshuffled_deck(carte):
+    if type(carte) is str: carte = string_to_card(carte)
+    c = 0
+    nr = 0
+    match carte.color:
+        case 'Spades': c = 1
+        case 'Hearts': c = 2
+        case 'Clubs': c = 3
+        case 'Diamonds': c = 4
+    if carte.number in [str(x) for x in range(2,11)]:
+        nr = int(carte.number) - 1
+    else:
+        match carte.number:
+            case 'J': nr = 10
+            case 'Q': nr = 11
+            case 'K': nr = 12
+            case 'A': nr = 13
+    return 13*(c-1)+nr-1
+
+class Card:
+    def __init__(self, number, color):
+        if type(number) is int: number = str(number)
+        try:
+            if(color) not in ['Spades', 'Hearts', 'Clubs', 'Diamonds']:
+                raise Exception
+            if(number) not in [str(x) for x in range(2,11)] + ['J','Q','K','A']:
+                raise Exception
+            self.color = color 
+            self.number = number 
+        except:
+            print('Card is invalid')
+            exit(1)
+    def __str__(self):
+        return f"{self.number}{(self.color)[0].lower()}"
+
+class Deck:
+    def __init__(self):
+        self.deck = []
+        for y in ['Spades', 'Hearts', 'Clubs', 'Diamonds']:
+            for x in ([str(z) for z in range(2,11)]+['J', 'Q', 'K', 'A']):
+                carte = Card(x,y)
+                self.deck.append(carte)
+    def __str__(self):
+        return "".join([str(x)+" " for x in self.deck])
+    def at(self, index):
+        try:
+            if index<0 or index>51:
+                raise Exception("Index out of array")
+            return self.deck[index]
+        except:
+            print("Index out of array")
+            exit(1)
+    def shuffle(self):
+        random.shuffle(self.deck)
+
+    def remove(self, index):
+        try:
+            if index<0 or index > 51:
+                raise Exception
+            del self.deck[index]
+        except:
+            print("index out of array")
+            exit(1)
+
+class Jucator:
+    def __init__(self, card1, card2):
+        if type(card1) is str: card1 = string_to_card(card1)
+        if type(card2) is str: card2 = string_to_card(card2)
+        self.carti = [card1, card2]
+    def __str__(self):
+        return str(self.carti[0])+ " " + str(self.carti[1])
+
+print("How many players at the table?")
+number = int(input())
+if(number<=1):
+    print("Too little people at the table")
+    exit(1)
+
+if(number>22):
+    print('Not enough cards for the number of people')
+    exit(1)
+
+deck = Deck()
+
+print("How many players' cards do you know?")
+knownMembersCards = int(input())
+if knownMembersCards < 0 or knownMembersCards > number:
+    print("Try again")
+    exit(1)
+
+for x in range(1, knownMembersCards):
