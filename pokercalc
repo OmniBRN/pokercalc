@@ -1,43 +1,75 @@
 #!/usr/bin/env python3
 import random
 
+
+def generateGames(players, deck, number, knownHands):
+    new_players = [x for x in players]
+    deck.shuffle()
+    new_deck = deck.copy()
+    print(new_deck)
+    contor = 0
+    for x in range(1, number-knownHands+1):
+        carti = [new_deck.at(contor), new_deck.at(contor+1)]
+        player = Jucator(carti[0], carti[1])
+        contor += 2
+        new_players.append(player)
+        new_deck.remove(carti[0])
+        new_deck.remove(carti[1])
+
+    for i, x in enumerate(new_players):
+        print(i+1, ':' ,x)
+
 def string_to_card(string):
     try:
         c = ''
-        if len(string) > 2:
+        if len(string) > 3 or len(string) < 2:
             raise Exception
-        if string[0] not in [str(x) for x in range(2,11)] + ['J','Q','K','A']:
-            raise Exception
-        if string[1] not in [x[0].lower() for x in ['Spades', 'Hearts', 'Clubs', 'Diamonds']]:
-            raise Exception
-        match string[1]:
-            case 'c': c = 'Clubs'
-            case 'd': c = 'Diamonds'
-            case 'h': c=  'Hearts'
-            case 's': c = 'Spades'
-        return Card(string[0], c)
+        if len(string) == 2:
+            if string[0] not in [str(x) for x in range(2,11)] + ['J','Q','K','A']:
+                raise Exception
+            if string[1] not in [x[0].lower() for x in ['Spades', 'Hearts', 'Clubs', 'Diamonds']]:
+                raise Exception
+            match string[1]:
+                case 'c': c = 'Clubs'
+                case 'd': c = 'Diamonds'
+                case 'h': c=  'Hearts'
+                case 's': c = 'Spades'
+            return Card(string[0], c)
+        if len(string)==3:
+            if string[0:2]!='10':
+                raise Exception
+            if string[2] not in [x[0].lower() for x in ['Spades', 'Hearts', 'Clubs', 'Diamonds']]:
+                raise Exception
+            match string[2]:
+                case 'c': c = 'Clubs'
+                case 'd': c = 'Diamonds'
+                case 'h': c=  'Hearts'
+                case 's': c = 'Spades'
+            return Card('10', c)
+
+            
     except:
-        print("String is not compatible with cards")
+        print("string is not compatible with cards")
         exit(1)
 
-def card_position_unshuffled_deck(carte):
-    if type(carte) is str: carte = string_to_card(carte)
-    c = 0
-    nr = 0
-    match carte.color:
-        case 'Spades': c = 1
-        case 'Hearts': c = 2
-        case 'Clubs': c = 3
-        case 'Diamonds': c = 4
-    if carte.number in [str(x) for x in range(2,11)]:
-        nr = int(carte.number) - 1
-    else:
-        match carte.number:
-            case 'J': nr = 10
-            case 'Q': nr = 11
-            case 'K': nr = 12
-            case 'A': nr = 13
-    return 13*(c-1)+nr-1
+# def card_position_unshuffled_deck(carte):
+#     if type(carte) is str: carte = string_to_card(carte)
+#     c = 0
+#     nr = 0
+#     match carte.color:
+#         case 'Spades': c = 1
+#         case 'Hearts': c = 2
+#         case 'Clubs': c = 3
+#         case 'Diamonds': c = 4
+#     if carte.number in [str(x) for x in range(2,11)]:
+#         nr = int(carte.number) - 1
+#     else:
+#         match carte.number:
+#             case 'J': nr = 10
+#             case 'Q': nr = 11
+#             case 'K': nr = 12
+#             case 'A': nr = 13
+#     return 13*(c-1)+nr-1
 
 class Card:
     def __init__(self, number, color):
@@ -54,6 +86,9 @@ class Card:
             exit(1)
     def __str__(self):
         return f"{self.number}{(self.color)[0].lower()}"
+    def __eq__(self, other):
+        return self.number == other.number and self.color==other.color
+
 
 class Deck:
     def __init__(self):
@@ -75,15 +110,15 @@ class Deck:
     def shuffle(self):
         random.shuffle(self.deck)
 
-    def remove(self, index):
-        try:
-            if index<0 or index > 51:
-                raise Exception
-            del self.deck[index]
-        except:
-            print("index out of array")
-            exit(1)
-
+    def remove(self, carte):
+        for i, x in enumerate(range(1, len(self.deck))):
+            if(carte == self.deck[i]):
+                self.deck = self.deck[:i] + self.deck[(i+1):]
+    def copy(self):
+        new_deck = Deck()
+        new_deck.deck = [x for x in self.deck]
+        return new_deck
+    
 class Jucator:
     def __init__(self, card1, card2):
         if type(card1) is str: card1 = string_to_card(card1)
@@ -109,5 +144,30 @@ knownMembersCards = int(input())
 if knownMembersCards < 0 or knownMembersCards > number:
     print("Try again")
     exit(1)
+players = []
+for x in range(1, knownMembersCards+1):
+    carti = input().split()
+    knownPlayer = Jucator(carti[0], carti[1])
+    players.append(knownPlayer)
+    deck.remove(string_to_card(carti[0]))
+    deck.remove(string_to_card(carti[1]))
 
-for x in range(1, knownMembersCards):
+for i in range(1, 1000):
+    generateGames(players,deck,number,knownMembersCards)
+
+# deck.shuffle()
+# print(deck)
+# contor = 0
+# for x in range(1, number-knownMembersCards+1):
+#     carti = [deck.at(contor), deck.at(contor+1)]
+#     player = Jucator(carti[0], carti[1])
+#     contor += 2
+#     players.append(player)
+#     deck.remove(carti[0])
+#     deck.remove(carti[1])
+
+
+# for i, x in enumerate(players):
+#     print(i+1, ':' ,x)
+
+
