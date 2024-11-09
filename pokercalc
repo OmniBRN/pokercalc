@@ -1,23 +1,238 @@
 #!/usr/bin/env python3
 import random
 
+def maximum(int1, int2):
+    if int1 > int2: return int1
+    return int2
+
+def pokerCombination(pokerHand):
+    pokerHand.sort()
+    
+    
+    for x in pokerHand:
+        print(x, end=" ")
+    
+    
+    colors = {}
+    numbers = {}
+    for color in ['Spades', 'Hearts', 'Clubs', 'Diamonds']:
+        colors[color] = (0, []);
+    for number in [str(x) for x in range(2,11) ] + ['J', 'Q', 'K', 'A']:
+        numbers[number] = (0, []);
+    for card in pokerHand:
+        t = colors[card.color][1]
+        t.append(card)
+        colors[card.color] = (colors[card.color][0] + 1, t) 
+
+    # Straight Flush - returns every card correctly
+    flush = -1
+    for color in colors:
+        if colors[color][0] >= 5:
+            consecutive = 1
+            biggestConsecutive = -1
+            biggestStart = -1
+            start = 0           
+            for i in range(0, len(colors[color][1])-1):
+                if colors[color][1][i].int() == colors[color][1][i+1].int() - 1:
+                    consecutive += 1
+                else:
+                    biggestConsecutive = maximum(consecutive, biggestConsecutive)
+                    biggestStart = maximum(start, biggestStart)
+                    consecutive = 1
+                    start = i+1
+                if consecutive > 5:
+                    start += 1
+                
+            biggestConsecutive = maximum(consecutive, biggestConsecutive)
+            biggestStart = maximum(start, biggestStart)
+            if biggestConsecutive >= 5: 
+                temp2 = colors[color][1]
+                temp2 = temp2[start:start+5]
+                temp3 = [x for x in reversed(temp2)]
+                print('Straight Flush', end=  " ")
+                for x in temp3:
+                    print(x, end= " ")
+                print()
+                return ('Straight Flush', (temp3, color))
+                
+            else: flush = color
+    
+    for card in pokerHand:
+        t = numbers[card.number][1]
+        t.append(card)
+        numbers[card.number] = (numbers[card.number][0] + 1, t)
+    keys = [x for x in numbers.keys()]
+    keys = [x for x in reversed(keys)]
+
+    # Four of a Kind - returns the cards correctly
+    for number in keys:
+        if numbers[number][0] == 4:
+            print('Four of a Kind', end = " ")
+            for x in numbers[number][1]:
+                print(x, end=" ")
+            print()
+            return ('Four of a Kind', numbers[number][1])
+
+    tok = -1     
+    pair = [-1, -1] 
+    count = 0
+    for number in keys:
+        if numbers[number][0] == 3:
+            if tok == -1:
+                tok = numbers[number][1]
+            else:
+                pair[count] = numbers[number][1][:2]
+                count += 1
+
+           
+    for number in keys:
+        if numbers[number][0] == 2:
+            pair[count] = numbers[number][1]
+            count+=1
+            if count == 2:
+                break
+
+    # Full House - returns the cards correctly
+    if tok != -1 and pair[0] != -1:
+            print('Full house', end = " ")
+            for x in tok + pair[0]:
+                print(x, end= " ")
+            print()
+            return ("Full house", tok + pair[0])
+
+    # Flush - returns the cards correctly
+    if flush != -1:
+        print('Flush', end=" ")
+
+        temp1 = -1
+        if len(colors[flush][1])>5:
+            temp1 = colors[flush][1]
+            temp1 = temp1[len(temp1)-5:]
+        else: temp1 = colors[flush][1]
+        for x in temp1:
+            print(x, end= " ")
+        temp1 = colors[flush][1]
+        print()
+        return ("Flush", (temp1,flush))
+    
+    t = [numbers[number][0] for number in keys]
+    consecutive = 0
+    start = 0
+    # Straight - returns cards correctly
+    for i in range(0, len(t)):
+        if t[i] > 0 :
+            consecutive += 1
+        else:
+            consecutive = 0
+            start = i+1
+        if consecutive == 5:
+            temp = [numbers[x] for x in keys]
+            temp = temp[start:start+5]
+            temp = [x[1][0] for x in temp]
+
+            print('Straight', end= " ")
+            for x in temp:
+                print(x, end= " ")
+            print()
+            return('Straight', temp) 
+    
+    if tok!= -1:
+        print('Three of a Kind', end = " ")
+        for x in tok:
+            print(x, end=" ")
+        print()
+        return('Three of a kind', tok)
+
+    if pair[1] != -1:
+        print('Two Pair', end = " ")
+        for x in pair[0] + pair[1]:
+            print(x, end = " ")
+        print()
+        return('Two Pair', pair[0] + pair[1])
+    
+    if pair[0] != -1:
+        print('Pair', end = " ")
+        for x in pair[0]:
+            print(x, end= " ")
+        print()
+        return('Pair', pair[0])
+    
+    hk = sorted(pokerHand, key=lambda x: x.int())[-1]
+    print('High Card', hk)
+    
+    return ('High Card', hk)
+
+    
+    
+
+        
+
+
+    
+
+    
+
+
+
+        
+
+        
+            
+
+            
+            
+
+
 
 def generateGames(players, deck, number, knownHands):
     new_players = [x for x in players]
     deck.shuffle()
     new_deck = deck.copy()
-    print(new_deck)
+    # print(new_deck)
     contor = 0
-    for x in range(1, number-knownHands+1):
+    for _ in range(1, number-knownHands+1):
         carti = [new_deck.at(contor), new_deck.at(contor+1)]
         player = Jucator(carti[0], carti[1])
         contor += 2
         new_players.append(player)
         new_deck.remove(carti[0])
         new_deck.remove(carti[1])
+    CardOnTable = []
+    
+    new_deck.remove(new_deck.at(0));
+    # Flop
+    CardOnTable.append(new_deck.at(0));
+    new_deck.remove(new_deck.at(0));
+    CardOnTable.append(new_deck.at(0));
+    new_deck.remove(new_deck.at(0));
+    CardOnTable.append(new_deck.at(0));
+    new_deck.remove(new_deck.at(0));
 
-    for i, x in enumerate(new_players):
-        print(i+1, ':' ,x)
+    new_deck.remove(new_deck.at(0));
+
+    # Turn
+    CardOnTable.append(new_deck.at(0));
+    new_deck.remove(new_deck.at(0));
+
+    new_deck.remove(new_deck.at(0));
+    # River
+    CardOnTable.append(new_deck.at(0));
+    new_deck.remove(new_deck.at(0));
+
+    # for x in CardOnTable:
+    #     print(x, end=" ")
+    # print()
+
+    # for i, x in enumerate(new_players):
+    #     print(i+1, ':' ,x)
+
+    # for x in players[:(knownHands+1)]:
+    #     print(x)
+
+    for x in players[:knownHands+1]:
+        pokerCombination(x.carti + CardOnTable)
+
+
 
 def string_to_card(string):
     try:
@@ -52,25 +267,6 @@ def string_to_card(string):
         print("string is not compatible with cards")
         exit(1)
 
-# def card_position_unshuffled_deck(carte):
-#     if type(carte) is str: carte = string_to_card(carte)
-#     c = 0
-#     nr = 0
-#     match carte.color:
-#         case 'Spades': c = 1
-#         case 'Hearts': c = 2
-#         case 'Clubs': c = 3
-#         case 'Diamonds': c = 4
-#     if carte.number in [str(x) for x in range(2,11)]:
-#         nr = int(carte.number) - 1
-#     else:
-#         match carte.number:
-#             case 'J': nr = 10
-#             case 'Q': nr = 11
-#             case 'K': nr = 12
-#             case 'A': nr = 13
-#     return 13*(c-1)+nr-1
-
 class Card:
     def __init__(self, number, color):
         if type(number) is int: number = str(number)
@@ -84,12 +280,53 @@ class Card:
         except:
             print('Card is invalid')
             exit(1)
+    def int(self):
+        if self.number in [str(x) for x in range(2,11)]:
+            return int(self.number)
+        match self.number:
+            case 'J': return 11
+            case 'Q': return 12
+            case 'K': return 13
+            case 'A': return 14
     def __str__(self):
         return f"{self.number}{(self.color)[0].lower()}"
     def __eq__(self, other):
         return self.number == other.number and self.color==other.color
-
-
+    def __gt__(self, other):
+        color1 = 0
+        color2 = 0
+        number1 = 0
+        number2 = 0
+        match self.color:
+            case 'Spades': color1 = 1
+            case 'Hearts': color1 = 2
+            case 'Clubs': color1 = 3
+            case 'Diamonds': color1 = 4
+        match other.color:
+            case 'Spades': color2 = 1
+            case 'Hearts': color2 = 2
+            case 'Clubs': color2 = 3
+            case 'Diamonds': color2 = 4
+        if color1 != color2:
+            return color1 > color2
+        if self.number in [str(x) for x in range(1,11)]:
+            number1 = int(self.number)
+        else:
+            match self.number:
+                case 'J': number1 = 11
+                case 'Q': number1 = 12
+                case 'K': number1 = 13
+                case 'A': number1 = 14
+        if other.number in [str(x) for x in range(1,11)]:
+            number2 = int(other.number)
+        else:
+            match other.number:
+                case 'J': number2 = 11
+                case 'Q': number2 = 12
+                case 'K': number2 = 13
+                case 'A': number2 = 14
+        return number1 > number2    
+                 
 class Deck:
     def __init__(self):
         self.deck = []
@@ -152,22 +389,6 @@ for x in range(1, knownMembersCards+1):
     deck.remove(string_to_card(carti[0]))
     deck.remove(string_to_card(carti[1]))
 
-for i in range(1, 1000):
+for i in range(1, 100):
     generateGames(players,deck,number,knownMembersCards)
-
-# deck.shuffle()
-# print(deck)
-# contor = 0
-# for x in range(1, number-knownMembersCards+1):
-#     carti = [deck.at(contor), deck.at(contor+1)]
-#     player = Jucator(carti[0], carti[1])
-#     contor += 2
-#     players.append(player)
-#     deck.remove(carti[0])
-#     deck.remove(carti[1])
-
-
-# for i, x in enumerate(players):
-#     print(i+1, ':' ,x)
-
 
