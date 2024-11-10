@@ -189,10 +189,11 @@ def pokerCombination(pokerHand):
     
     return ('High Card', [hk] + kicker)
 
-def generateGames(players, deck, number, knownHands, gameNO):
+def generateGames(players, deck, number, knownHands,CardOnTable, gameNO):
     new_players = [x for x in players]
-    deck.shuffle()
     new_deck = deck.copy()
+    new_deck.shuffle()
+    new_CardOnTable= [x for x in CardOnTable]
     # print(new_deck)
     contor = 0
     for _ in range(1, number-knownHands+1):
@@ -202,33 +203,46 @@ def generateGames(players, deck, number, knownHands, gameNO):
         new_players.append(player)
         new_deck.remove(carti[0])
         new_deck.remove(carti[1])
-    CardOnTable = []
     
     new_deck.remove(new_deck.at(0));
-    # Flop
-    CardOnTable.append(new_deck.at(0));
-    new_deck.remove(new_deck.at(0));
-    CardOnTable.append(new_deck.at(0));
-    new_deck.remove(new_deck.at(0));
-    CardOnTable.append(new_deck.at(0));
-    new_deck.remove(new_deck.at(0));
-
-    new_deck.remove(new_deck.at(0));
-
-    # Turn
-    CardOnTable.append(new_deck.at(0));
-    new_deck.remove(new_deck.at(0));
-
-    new_deck.remove(new_deck.at(0));
-    # River
-    CardOnTable.append(new_deck.at(0));
-    new_deck.remove(new_deck.at(0));
-
-    # print(f"GAME #{gameNO} - {CardOnTable}") 
     
+    if len(new_CardOnTable) == 0:
+        # Flop
+        new_CardOnTable.append(new_deck.at(0));
+        new_deck.remove(new_deck.at(0));
+        new_CardOnTable.append(new_deck.at(0));
+        new_deck.remove(new_deck.at(0));
+        new_CardOnTable.append(new_deck.at(0));
+        new_deck.remove(new_deck.at(0));
+
+        new_deck.remove(new_deck.at(0));
+        # Turn
+        new_CardOnTable.append(new_deck.at(0));
+        new_deck.remove(new_deck.at(0));
+
+        new_deck.remove(new_deck.at(0));
+        # River
+        new_CardOnTable.append(new_deck.at(0));
+        new_deck.remove(new_deck.at(0));
+
+    elif len(new_CardOnTable) == 3:
+        # Turn
+        new_CardOnTable.append(new_deck.at(0));
+        new_deck.remove(new_deck.at(0));
+
+        new_deck.remove(new_deck.at(0));
+        # River
+        new_CardOnTable.append(new_deck.at(0));
+        new_deck.remove(new_deck.at(0));
+    elif len(new_CardOnTable) == 4:
+        # River
+        new_CardOnTable.append(new_deck.at(0));
+        new_deck.remove(new_deck.at(0));
+
+    # print(f"GAME #{gameNO} - {new_CardOnTable}") 
     hand = [0 for _ in players[:knownHands+1]]
     for i,x in enumerate(players[:knownHands+1]):
-        hand[i] = [i, pokerCombination(x.carti + CardOnTable)]
+        hand[i] = [i, pokerCombination(x.carti + new_CardOnTable)]
         # print(f"Player {i+1}: {hand[i]}")
     # print(hand)
     for x in hand:
@@ -591,24 +605,41 @@ for x in range(1, knownMembersCards+1):
 # print(deck.deck)
 Winners = [0 for x in range(0, knownMembersCards)]
 
-# print("In what states is the game now?")
-# print("Pre-Flop")
-# print("Flop")
-# print("Turn")
-# print("River")
+print("In what states is the game now?")
+print("Pre-Flop")
+print("Flop")
+print("Turn")
+print("River")
 
-# Cards_On_Table = []
-# state = input()
-# match state:
-#     case 'Pre-Flop': 
-#     case 'Flop': break
-#     case 'Turn':
-#     case 'River':
+Cards_On_Table = []
+state = input()
+match state:
+    case 'Flop':
+        print("Enter the flopped cards (3):")
+        cards = input().split() 
+        cards = [string_to_card(x) for x in cards]
+        for x in cards:
+            deck.remove(x)
+        Cards_On_Table = cards
+    case 'Turn':
+        print("Enter the flopped cards and the turned card (4):")
+        cards = input().split() 
+        cards = [string_to_card(x) for x in cards]
+        for x in cards:
+            deck.remove(x)
+        Cards_On_Table = cards
+    case 'River':
+        print("Enter the flopped cards, turned card and the river (5):")
+        cards = input().split() 
+        cards = [string_to_card(x) for x in cards]
+        for x in cards:
+            deck.remove(x)
+        Cards_On_Table = cards
 
 
 NUMBER_OF_GAMES = 5001
 for i in range(1, NUMBER_OF_GAMES):
-    winner = generateGames(players,deck,number,knownMembersCards, i)
+    winner = generateGames(players,deck,number,knownMembersCards, Cards_On_Table, i)
     pct = 1 / len(winner)
     for x in winner:
         Winners[x] += pct
