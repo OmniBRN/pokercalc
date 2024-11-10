@@ -7,10 +7,11 @@ def maximum(int1, int2):
 
 def pokerCombination(pokerHand):
     pokerHand.sort()
+    pokerHand_Copy = [x for x in pokerHand]
     
-    
-    for x in pokerHand:
-        print(x, end=" ")
+    pokerHand_Copy = sorted(pokerHand_Copy, key = lambda x: x.int())[::-1]
+    # for x in pokerHand:
+    #     print(x, end=" ")
     
     
     colors = {}
@@ -49,11 +50,14 @@ def pokerCombination(pokerHand):
                 temp2 = colors[color][1]
                 temp2 = temp2[start:start+5]
                 temp3 = [x for x in reversed(temp2)]
-                print('Straight Flush', end=  " ")
-                for x in temp3:
-                    print(x, end= " ")
-                print()
-                return ('Straight Flush', (temp3, color))
+                # print('Straight Flush', end=  " ")
+                # for x in temp3:
+                #     print(x, end= " ")
+                # print()
+                if temp3[0].number == 'A':
+                    return('Royal Flush', temp3)
+
+                return ('Straight Flush', temp3)
                 
             else: flush = color
     
@@ -67,10 +71,10 @@ def pokerCombination(pokerHand):
     # Four of a Kind - returns the cards correctly
     for number in keys:
         if numbers[number][0] == 4:
-            print('Four of a Kind', end = " ")
-            for x in numbers[number][1]:
-                print(x, end=" ")
-            print()
+            # print('Four of a Kind', end = " ")
+            # for x in numbers[number][1]:
+            #     print(x, end=" ")
+            # print()
             return ('Four of a Kind', numbers[number][1])
 
     tok = -1     
@@ -94,26 +98,26 @@ def pokerCombination(pokerHand):
 
     # Full House - returns the cards correctly
     if tok != -1 and pair[0] != -1:
-            print('Full house', end = " ")
-            for x in tok + pair[0]:
-                print(x, end= " ")
-            print()
-            return ("Full house", tok + pair[0])
+            # print('Full house', end = " ")
+            # for x in tok + pair[0]:
+            #     print(x, end= " ")
+            # print()
+            return ("Full house", (tok, pair[0]))
 
     # Flush - returns the cards correctly
     if flush != -1:
-        print('Flush', end=" ")
+        # print('Flush', end=" ")
 
         temp1 = -1
         if len(colors[flush][1])>5:
             temp1 = colors[flush][1]
             temp1 = temp1[len(temp1)-5:]
         else: temp1 = colors[flush][1]
-        for x in temp1:
-            print(x, end= " ")
-        temp1 = colors[flush][1]
-        print()
-        return ("Flush", (temp1,flush))
+        # for x in temp1:
+        #     print(x, end= " ")
+        # temp1 = colors[flush][1]
+        # print()
+        return ("Flush", temp1)
     
     t = [numbers[number][0] for number in keys]
     consecutive = 0
@@ -130,61 +134,61 @@ def pokerCombination(pokerHand):
             temp = temp[start:start+5]
             temp = [x[1][0] for x in temp]
 
-            print('Straight', end= " ")
-            for x in temp:
-                print(x, end= " ")
-            print()
+            # print('Straight', end= " ")
+            # for x in temp:
+            #     print(x, end= " ")
+            # print()
             return('Straight', temp) 
     
     if tok!= -1:
-        print('Three of a Kind', end = " ")
-        for x in tok:
-            print(x, end=" ")
-        print()
-        return('Three of a kind', tok)
+        # print('Three of a Kind', end = " ")
+        # for x in tok:
+        #     print(x, end=" ")
+        # print()
+        kicker = []
+        for x in pokerHand_Copy:
+            if len(kicker) > 1:
+                break
+            if x not in tok:
+                kicker.append(x)
+        return('Three of a kind', (tok, kicker))
 
     if pair[1] != -1:
-        print('Two Pair', end = " ")
-        for x in pair[0] + pair[1]:
-            print(x, end = " ")
-        print()
-        return('Two Pair', pair[0] + pair[1])
+        # print('Two Pair', end = " ")
+        # for x in pair[0] + pair[1]:
+        #     print(x, end = " ")
+        # print()
+        kicker = -1
+        for x in pokerHand_Copy:
+            # print(x, end = " ")
+            if x not in pair[0] + pair[1]:
+                kicker = x
+                break
+    
+        return('Two Pair', (pair[0], pair[1], kicker))
     
     if pair[0] != -1:
-        print('Pair', end = " ")
-        for x in pair[0]:
-            print(x, end= " ")
-        print()
-        return('Pair', pair[0])
+        # print('Pair', end = " ")
+        # for x in pair[0]:
+        #     print(x, end= " ")
+        # print()
+        kicker = []
+        for x in pokerHand_Copy:
+            if len(kicker) > 2:
+                break
+            if x not in pair[0]:
+                kicker.append(x)
+        return('Pair', (pair[0], kicker))
     
-    hk = sorted(pokerHand, key=lambda x: x.int())[-1]
-    print('High Card', hk)
     
-    return ('High Card', hk)
+    hk = pokerHand_Copy[0]
+    kicker = pokerHand_Copy[1:5]
 
+    # print('High Card', hk)
     
-    
+    return ('High Card', [hk] + kicker)
 
-        
-
-
-    
-
-    
-
-
-
-        
-
-        
-            
-
-            
-            
-
-
-
-def generateGames(players, deck, number, knownHands):
+def generateGames(players, deck, number, knownHands, gameNO):
     new_players = [x for x in players]
     deck.shuffle()
     new_deck = deck.copy()
@@ -219,21 +223,197 @@ def generateGames(players, deck, number, knownHands):
     CardOnTable.append(new_deck.at(0));
     new_deck.remove(new_deck.at(0));
 
-    # for x in CardOnTable:
-    #     print(x, end=" ")
-    # print()
+    # print(f"GAME #{gameNO} - {CardOnTable}") 
+    
+    hand = [0 for _ in players[:knownHands+1]]
+    for i,x in enumerate(players[:knownHands+1]):
+        hand[i] = [i, pokerCombination(x.carti + CardOnTable)]
+        # print(f"Player {i+1}: {hand[i]}")
+    # print(hand)
+    for x in hand:
+        match x[1][0]:
+            case 'Royal Flush': x[1] = (10, x[1][0], x[1][1])
+            case 'Straight Flush': x[1] =  (9, x[1][0] ,x[1][1])
+            case 'Four of a Kind':x[1] = (8,x[1][0], x[1][1])
+            case 'Full house':x[1] = (7,x[1][0], x[1][1])
+            case 'Flush':x[1] = (6,x[1][0], x[1][1])
+            case 'Straight':x[1] = (5,x[1][0], x[1][1])
+            case 'Three of a kind':x[1] = (4,x[1][0], x[1][1])
+            case 'Two Pair':x[1]= (3,x[1][0], x[1][1])
+            case 'Pair':x[1] = (2,x[1][0], x[1][1])
+            case 'High Card':x[1] = (1,x[1][0], x[1][1])
+    biggestHandType = -1
+    biggestHands = []
 
-    # for i, x in enumerate(new_players):
-    #     print(i+1, ':' ,x)
 
-    # for x in players[:(knownHands+1)]:
-    #     print(x)
+    for i in range(10,-1,-1):
+        for x in hand:
+            if x[1][0] == i:
+                biggestHandType = i
+                biggestHands.append(x)
+        if biggestHandType != -1:
+            break
+    if len(biggestHands) == 1:
+        return [biggestHands[0][0]]
+    biggestHands = [([x[0]], x[1]) for x in biggestHands]
+    
+    dif = 0
+    for i in range(0, len(biggestHands)-1-dif):
+        for j in range(i+1, len(biggestHands)):
+            j = j - dif
+            if biggestHands[i][1][2] == biggestHands[j][1][2]:
+                biggestHands[i][0].append(biggestHands[j][0][0])
+                biggestHands = biggestHands[:j] + biggestHands[j+1:]
+                dif += 1
+    
+    # for x in biggestHands:
+    #     print(x, end= " ")
+    while(len(biggestHands) > 1):
+        
+        hand1 = biggestHands[0] 
+        hand2 = biggestHands[1]
+        t = []
+        if len(biggestHands) > 2:
+            t = biggestHands[2:]
+        match biggestHandType:
+            # Straight Flush nu poti sa ai egalitate decat daca ai straight flush pe masa
+            case 9:
+                if hand1[1][2][0].int() > hand2[1][2][0].int():
+                    biggestHands = [hand1] + t 
+                    break
+                else: 
+                    biggestHands = [hand2] + t
+                    break
+            
+            # Four of a kind se intampla la mai multi oamenii numai daca e four of a kind pe masa 
+            
+            # Full house mai intai se compara numarul tok-ului si dupa numarul pair-ului
+            case 7:
+                if hand1[1][2][0][0].int() > hand2[1][2][1][0].int():
+                    biggestHands = [hand1] + t
+                    break
+                elif hand1[1][2][0][0].int() > hand2[1][2][1][0].int():
+                    biggestHands = [hand2] + t
+                    break
+                else:
+                    if hand1[1][2][1][0].int() > hand2[1][2][1][0].int():
+                        biggestHands = [hand1] + t
+                        break
+                    else:
+                        biggestHands = [hand2] + t
+                        break
+            # Flush
+            case 6:
+                currentCard = 0
+                while(currentCard<5):
+                    if hand1[1][2][currentCard].int() > hand2[1][2][currentCard].int():
+                        biggestHands = [hand1] + t
+                        break
+                    
+                    elif hand1[1][2][currentCard].int() < hand2[1][2][currentCard].int():
+                        biggestHands = [hand2] + t
+                        break
 
-    for x in players[:knownHands+1]:
-        pokerCombination(x.carti + CardOnTable)
+                    else:
+                        currentCard += 1
+                break
+            # Straight
+            case 5:
+                if hand1[1][2][0].int() > hand2[1][2][0].int():
+                    biggestHands = [hand1] + t
+                    break
+                else:
+                    biggestHands = [hand2] + t
+                    break
 
+            # Three of a kind
+            case 4:
+                if hand1[1][2][0][0].int() > hand2[1][2][0][0].int():
+                    biggestHands = [hand1] + t
+                    break
+                elif hand1[1][2][0][0].int() < hand2[1][2][0][0].int():
+                    biggestHands = [hand1] + t
+                    break
+                else:
+                    currentCard = 0
+                    while(currentCard<2):
+                        if hand1[1][2][1][currentCard].int() > hand2[1][2][1][currentCard].int():
+                            biggestHands = [hand1] + t
+                            break
+                        
+                        elif hand1[1][2][1][currentCard].int() < hand2[1][2][1][currentCard].int():
+                            biggestHands = [hand2] + t
+                            break
 
+                        else:
+                            currentCard += 1
+                    break
+            # Two Pair
+            case 3: 
+                if hand1[1][2][0][0].int() > hand2[1][2][0][0].int():
+                    biggestHands = [hand1] + t
+                    break
 
+                elif hand1[1][2][0][0].int() < hand2[1][2][0][0].int():
+                    biggestHands = [hand2] + t
+                    break
+                else:
+                    if hand1[1][2][1][0].int() > hand2[1][2][1][0].int():
+                        biggestHands = [hand1] + t
+                        break
+
+                    elif hand1[1][2][1][0].int() < hand2[1][2][1][0].int():
+                        biggestHands = [hand2] + t
+                        break
+                    else:
+                        if hand1[1][2][2].int() > hand2[1][2][2].int():
+                            biggestHands = [hand1] + t
+                            break
+                        else:
+                            biggestHands = [hand2] + t
+                            break
+            # Pair
+            case 2:
+
+                if hand1[1][2][0][0].int() > hand2[1][2][0][0].int():
+                    biggestHands = [hand1] + t
+                    break
+
+                elif hand1[1][2][0][0].int() < hand2[1][2][0][0].int():
+                    biggestHands = [hand2] + t
+                    break
+                else:
+
+                    currentCard = 0
+                    while(currentCard<3):
+                        if hand1[1][2][1][currentCard].int() > hand2[1][2][1][currentCard].int():
+                            biggestHands = [hand1] + t
+                            break
+                        
+                        elif hand1[1][2][1][currentCard].int() < hand2[1][2][1][currentCard].int():
+                            biggestHands = [hand2] + t
+                            break
+
+                        else:
+                            currentCard += 1
+                    break
+            # High Card
+            case 1:
+                currentCard = 0
+                while(currentCard<5):
+                    if hand1[1][2][currentCard].int() > hand2[1][2][currentCard].int():
+                        biggestHands = [hand1] + t
+                        break
+                    
+                    elif hand1[1][2][currentCard].int() < hand2[1][2][currentCard].int():
+                        biggestHands = [hand2] + t
+                        break
+
+                    else:
+                        currentCard += 1
+                break
+    return biggestHands[0][0]
+                
 def string_to_card(string):
     try:
         c = ''
@@ -288,6 +468,9 @@ class Card:
             case 'Q': return 12
             case 'K': return 13
             case 'A': return 14
+    
+    def __repr__(self):
+        return str(self)
     def __str__(self):
         return f"{self.number}{(self.color)[0].lower()}"
     def __eq__(self, other):
@@ -389,6 +572,16 @@ for x in range(1, knownMembersCards+1):
     deck.remove(string_to_card(carti[0]))
     deck.remove(string_to_card(carti[1]))
 
-for i in range(1, 100):
-    generateGames(players,deck,number,knownMembersCards)
+Winners = [0 for x in range(0, knownMembersCards)]
 
+NUMBER_OF_GAMES = 10000
+for i in range(1, NUMBER_OF_GAMES):
+    winner = generateGames(players,deck,number,knownMembersCards, i)
+    pct = 1 / len(winner)
+    for x in winner:
+        Winners[x] += pct
+    
+    # print(f"GAME #{i} : Winner - {winner}")
+
+for i,x in enumerate(Winners):
+    print(f"Player #{i+1}: {x / NUMBER_OF_GAMES}")
