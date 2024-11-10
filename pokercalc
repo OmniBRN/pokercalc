@@ -270,7 +270,6 @@ def generateGames(players, deck, number, knownHands, gameNO):
     # for x in biggestHands:
     #     print(x, end= " ")
     while(len(biggestHands) > 1):
-        
         hand1 = biggestHands[0] 
         hand2 = biggestHands[1]
         t = []
@@ -281,10 +280,10 @@ def generateGames(players, deck, number, knownHands, gameNO):
             case 9:
                 if hand1[1][2][0].int() > hand2[1][2][0].int():
                     biggestHands = [hand1] + t 
-                    break
+                    
                 else: 
                     biggestHands = [hand2] + t
-                    break
+                  
             
             # Four of a kind se intampla la mai multi oamenii numai daca e four of a kind pe masa 
             # case 8:
@@ -293,17 +292,17 @@ def generateGames(players, deck, number, knownHands, gameNO):
             case 7:
                 if hand1[1][2][0][0].int() > hand2[1][2][1][0].int():
                     biggestHands = [hand1] + t
-                    break
+                    
                 elif hand1[1][2][0][0].int() > hand2[1][2][1][0].int():
                     biggestHands = [hand2] + t
-                    break
+                   
                 else:
                     if hand1[1][2][1][0].int() > hand2[1][2][1][0].int():
                         biggestHands = [hand1] + t
-                        break
+                        
                     else:
                         biggestHands = [hand2] + t
-                        break
+                      
             # Flush
             case 6:
                 currentCard = 0
@@ -315,27 +314,28 @@ def generateGames(players, deck, number, knownHands, gameNO):
                     elif hand1[1][2][currentCard].int() < hand2[1][2][currentCard].int():
                         biggestHands = [hand2] + t
                         break
+                      
 
                     else:
                         currentCard += 1
-                break
+               
             # Straight
             case 5:
                 if hand1[1][2][0].int() > hand2[1][2][0].int():
                     biggestHands = [hand1] + t
-                    break
+                    
                 else:
                     biggestHands = [hand2] + t
-                    break
+                    
 
             # Three of a kind
             case 4:
                 if hand1[1][2][0][0].int() > hand2[1][2][0][0].int():
                     biggestHands = [hand1] + t
-                    break
+                    
                 elif hand1[1][2][0][0].int() < hand2[1][2][0][0].int():
                     biggestHands = [hand1] + t
-                    break
+                    
                 else:
                     currentCard = 0
                     while(currentCard<2):
@@ -346,44 +346,45 @@ def generateGames(players, deck, number, knownHands, gameNO):
                         elif hand1[1][2][1][currentCard].int() < hand2[1][2][1][currentCard].int():
                             biggestHands = [hand2] + t
                             break
+                            
 
                         else:
                             currentCard += 1
-                    break
+                   
             # Two Pair
             case 3: 
                 if hand1[1][2][0][0].int() > hand2[1][2][0][0].int():
                     biggestHands = [hand1] + t
-                    break
+                   
 
                 elif hand1[1][2][0][0].int() < hand2[1][2][0][0].int():
                     biggestHands = [hand2] + t
-                    break
+                   
                 else:
                     if hand1[1][2][1][0].int() > hand2[1][2][1][0].int():
                         biggestHands = [hand1] + t
-                        break
+                       
 
                     elif hand1[1][2][1][0].int() < hand2[1][2][1][0].int():
                         biggestHands = [hand2] + t
-                        break
+                        
                     else:
                         if hand1[1][2][2].int() > hand2[1][2][2].int():
                             biggestHands = [hand1] + t
-                            break
+                           
                         else:
                             biggestHands = [hand2] + t
-                            break
+                            
             # Pair
             case 2:
 
                 if hand1[1][2][0][0].int() > hand2[1][2][0][0].int():
                     biggestHands = [hand1] + t
-                    break
+                    
 
                 elif hand1[1][2][0][0].int() < hand2[1][2][0][0].int():
                     biggestHands = [hand2] + t
-                    break
+                   
                 else:
 
                     currentCard = 0
@@ -394,7 +395,7 @@ def generateGames(players, deck, number, knownHands, gameNO):
                         
                         elif hand1[1][2][1][currentCard].int() < hand2[1][2][1][currentCard].int():
                             biggestHands = [hand2] + t
-                            break
+                            break 
 
                         else:
                             currentCard += 1
@@ -410,10 +411,11 @@ def generateGames(players, deck, number, knownHands, gameNO):
                     elif hand1[1][2][currentCard].int() < hand2[1][2][currentCard].int():
                         biggestHands = [hand2] + t
                         break
+                        
 
                     else:
                         currentCard += 1
-                break
+                
     return biggestHands[0][0]
                 
 def string_to_card(string):
@@ -533,11 +535,21 @@ class Deck:
         random.shuffle(self.deck)
 
     def remove(self, carte):
-        if carte == self.deck[len(self.deck)-1]:
-            self.deck = self.deck[:len(self.deck)-1]
-        for i in range(0, len(self.deck)-1):
-            if carte == self.deck[i]:
-                self.deck = self.deck[:i] + self.deck[(i+1):]
+            removed = -1
+            if carte == self.deck[len(self.deck)-1]:
+                self.deck = self.deck[:len(self.deck)-1]
+                removed = 0
+            else:
+                for i in range(0, len(self.deck)-1):
+                    if carte == self.deck[i]:
+                        self.deck = self.deck[:i] + self.deck[(i+1):]
+                        removed = 0
+            if removed == -1:
+                print("Two instances of the same card found")
+                exit(1)
+            
+            
+
     def copy(self):
         new_deck = Deck()
         new_deck.deck = [x for x in self.deck]
@@ -563,7 +575,7 @@ if(number>22):
 
 deck = Deck()
 
-print("How many players' cards do you know?")
+print("How many players' cards do you want to evaluate?")
 knownMembersCards = int(input())
 if knownMembersCards < 0 or knownMembersCards > number:
     print("Try again")
@@ -579,7 +591,22 @@ for x in range(1, knownMembersCards+1):
 # print(deck.deck)
 Winners = [0 for x in range(0, knownMembersCards)]
 
-NUMBER_OF_GAMES = 50000
+# print("In what states is the game now?")
+# print("Pre-Flop")
+# print("Flop")
+# print("Turn")
+# print("River")
+
+# Cards_On_Table = []
+# state = input()
+# match state:
+#     case 'Pre-Flop': 
+#     case 'Flop': break
+#     case 'Turn':
+#     case 'River':
+
+
+NUMBER_OF_GAMES = 5001
 for i in range(1, NUMBER_OF_GAMES):
     winner = generateGames(players,deck,number,knownMembersCards, i)
     pct = 1 / len(winner)
@@ -589,4 +616,4 @@ for i in range(1, NUMBER_OF_GAMES):
     # print(f"GAME #{i} : Winner - {winner}")
 
 for i,x in enumerate(Winners):
-    print(f"Player #{i+1}: {(math.trunc(x*1000 / NUMBER_OF_GAMES))/1000}")
+    print(f"Player #{i+1}: {(math.trunc(x*100/ NUMBER_OF_GAMES))/100}")
