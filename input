@@ -1,5 +1,26 @@
+# > How many players are at the table?
+# ex: 6
 6
-3
-Ad Kd
-8h 3d
-As Qd
+# > How many players' cards you want to evaluate?
+# ex: 
+# ---------------------------------------------------------------
+# 2
+# Ah Kd
+# 10c 2s
+# ---------------------------------------------------------------
+2
+Ah Kd
+10c 2s
+# > In what state is the game now?
+# > Pre-Flop (No input, chooses 5 random cards)
+# > Flop (Input 3 cards, chooses 2 random cards)
+# > Turn (Input 4 cards, chooses 1 random card)
+# > River (Input 5 cards, evaluates the winning hand)
+# ex:
+# ---------------------------------------------------------------
+# Flop 
+# > Enter the flopped cards (3):
+# Ks 2h 4c
+# ---------------------------------------------------------------
+Flop
+Ks 2h 4c
