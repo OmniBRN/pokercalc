@@ -22,3 +22,7 @@ I enjoy playing poker and I don't really enjoy the services the internet provide
 
 It's basically finished and I think I caught most of the bugs.
 
+## Anything Left?
+
+I'd say the only thing left to add is a "burned pile" so that the cards other players have not played are taken into account when generating the random cards.
+Until then the chances are pretty good, but when compared to "Real Poker Tournament" evaluations, they are going to be at best %1 off, or maybe completely off.
