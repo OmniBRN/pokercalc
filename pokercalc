@@ -260,7 +260,7 @@ def generateGames(players, deck, number, knownHands,CardOnTable, gameNO):
     biggestHandType = -1
     biggestHands = []
 
-
+    
     for i in range(10,-1,-1):
         for x in hand:
             if x[1][0] == i:
@@ -272,17 +272,45 @@ def generateGames(players, deck, number, knownHands,CardOnTable, gameNO):
         return [biggestHands[0][0]]
     biggestHands = [([x[0]], x[1]) for x in biggestHands]
     
+    for i in range(0,len(biggestHands)):
+        print(f"Player {i+1}: {biggestHands[i]}")
+
+    biggestHandType = biggestHands[0][1][0]
     dif = 0
     for i in range(0, len(biggestHands)-1-dif):
         for j in range(i+1, len(biggestHands)):
             j = j - dif
-            if biggestHands[i][1][2] == biggestHands[j][1][2]:
+            match biggestHandType:
+                case 10:
+                    if biggestHands[i][1][2] == biggestHands[j][1][2]:
+                        biggestHands[i][0].append(biggestHands[j][0][0])
+                        biggestHands = biggestHands[:j] + biggestHands[j+1:]
+                        dif += 1
+                case 9:
+                    if biggestHands[i][1][2] == biggestHands[j][1][2]:
+                        biggestHands[i][0].append(biggestHands[j][0][0])
+                        biggestHands = biggestHands[:j] + biggestHands[j+1:]
+                        dif += 1
+                case 8:
+                    if biggestHands[i][1][2] == biggestHands[j][1][2]:
+                        biggestHands[i][0].append(biggestHands[j][0][0])
+                        biggestHands = biggestHands[:j] + biggestHands[j+1:]
+                        dif += 1
+                case 7: 
+                    if biggestHands[i][1][2] == biggestHands[j][1][2]:
+                        biggestHands[i][0].append(biggestHands[j][0][0])
+                        biggestHands = biggestHands[:j] + biggestHands[j+1:]
+                        dif += 1
+                
+            if biggestHands[i][1][2][0] == biggestHands[j][1][2][0]:
                 biggestHands[i][0].append(biggestHands[j][0][0])
                 biggestHands = biggestHands[:j] + biggestHands[j+1:]
                 dif += 1
     
     # for x in biggestHands:
     #     print(x, end= " ")
+    if len(biggestHands) == 1:
+        biggestHands[0][0]
     while(len(biggestHands) > 1):
         hand1 = biggestHands[0] 
         hand2 = biggestHands[1]
@@ -611,6 +639,8 @@ print("Flop")
 print("Turn")
 print("River")
 
+
+
 Cards_On_Table = []
 state = input()
 match state:
@@ -635,6 +665,14 @@ match state:
         for x in cards:
             deck.remove(x)
         Cards_On_Table = cards
+
+t = input("Burned pile? (y/n)\n")
+if t == 'y':
+    t = [string_to_card(x) for x in input("Enter the cards:\n").split()]
+    for x in t:
+        deck.remove(x)
+
+    
 
 
 NUMBER_OF_GAMES = 10001

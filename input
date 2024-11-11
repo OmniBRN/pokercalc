@@ -1,6 +1,6 @@
 # > How many players are at the table?
 # ex: 6
-6
+9
 # > How many players' cards you want to evaluate?
 # ex: 
 # ---------------------------------------------------------------
@@ -8,9 +8,10 @@
 # Ah Kd
 # 10c 2s
 # ---------------------------------------------------------------
-2
-Ah Kd
-10c 2s
+3
+10h 5h 
+Kh Qs
+Ks 9d
 # > In what state is the game now?
 # > Pre-Flop (No input, chooses 5 random cards)
 # > Flop (Input 3 cards, chooses 2 random cards)
@@ -22,5 +23,11 @@ Ah Kd
 # > Enter the flopped cards (3):
 # Ks 2h 4c
 # ---------------------------------------------------------------
-Flop
-Ks 2h 4c
+Pre-Flop
+# > Burned pile? (y/n)
+# > Enter the cards: 
+# ex:
+# ---------------------------------------------------------------
+# y
+# 10d 9h
+n
