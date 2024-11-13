@@ -166,7 +166,7 @@ def pokerCombination(pokerHand):
                 kicker = x
                 break
     
-        return('Two Pair', (pair[0], pair[1], kicker))
+        return('Two Pair', (pair[0], pair[1], [kicker]))
     
     if pair[0] != -1:
         # print('Pair', end = " ")
@@ -272,43 +272,32 @@ def generateGames(players, deck, number, knownHands,CardOnTable, gameNO):
         return [biggestHands[0][0]]
     biggestHands = [([x[0]], x[1]) for x in biggestHands]
     
-    for i in range(0,len(biggestHands)):
-        print(f"Player {i+1}: {biggestHands[i]}")
+    # for i in range(0,len(biggestHands)):
+    #     print(f"Player {i+1}: {biggestHands[i]}")
 
     biggestHandType = biggestHands[0][1][0]
     dif = 0
     for i in range(0, len(biggestHands)-1-dif):
         for j in range(i+1, len(biggestHands)):
             j = j - dif
-            match biggestHandType:
-                case 10:
-                    if biggestHands[i][1][2] == biggestHands[j][1][2]:
-                        biggestHands[i][0].append(biggestHands[j][0][0])
-                        biggestHands = biggestHands[:j] + biggestHands[j+1:]
-                        dif += 1
-                case 9:
-                    if biggestHands[i][1][2] == biggestHands[j][1][2]:
-                        biggestHands[i][0].append(biggestHands[j][0][0])
-                        biggestHands = biggestHands[:j] + biggestHands[j+1:]
-                        dif += 1
-                case 8:
-                    if biggestHands[i][1][2] == biggestHands[j][1][2]:
-                        biggestHands[i][0].append(biggestHands[j][0][0])
-                        biggestHands = biggestHands[:j] + biggestHands[j+1:]
-                        dif += 1
-                case 7: 
-                    if biggestHands[i][1][2] == biggestHands[j][1][2]:
-                        biggestHands[i][0].append(biggestHands[j][0][0])
-                        biggestHands = biggestHands[:j] + biggestHands[j+1:]
-                        dif += 1
-                
-            if biggestHands[i][1][2][0] == biggestHands[j][1][2][0]:
+            i_hand = [x for x in biggestHands[i][1][2]]
+            j_hand = [x for x in biggestHands[j][1][2]]
+            if biggestHandType in [1,5,6,8,9,10]:
+                i_hand = [y.int() for y in i_hand]
+                j_hand = [y.int() for y in j_hand] 
+            else:
+                i_hand = [[y.int() for y in x] for x in i_hand]
+                j_hand = [[y.int() for y in x] for x in j_hand] 
+
+            if i_hand == j_hand:
+                # print("bunched")
                 biggestHands[i][0].append(biggestHands[j][0][0])
                 biggestHands = biggestHands[:j] + biggestHands[j+1:]
                 dif += 1
-    
+                
     # for x in biggestHands:
     #     print(x, end= " ")
+    # print()
     if len(biggestHands) == 1:
         biggestHands[0][0]
     while(len(biggestHands) > 1):
@@ -328,14 +317,19 @@ def generateGames(players, deck, number, knownHands,CardOnTable, gameNO):
                   
             
             # Four of a kind se intampla la mai multi oamenii numai daca e four of a kind pe masa 
-            # case 8:
-            #     break
+            case 8:
+                if hand1[1][2][0].int() > hand2[1][2][0].int():
+                    biggestHands = [hand1] + t 
+                    
+                else: 
+                    biggestHands = [hand2] + t
             # Full house mai intai se compara numarul tok-ului si dupa numarul pair-ului
             case 7:
-                if hand1[1][2][0][0].int() > hand2[1][2][1][0].int():
+                # print(f"{hand1[1][2][0][0].int()} > {hand2[1][2][0][0].int()}")
+                if hand1[1][2][0][0].int() > hand2[1][2][0][0].int():
                     biggestHands = [hand1] + t
                     
-                elif hand1[1][2][0][0].int() > hand2[1][2][1][0].int():
+                elif hand1[1][2][0][0].int() < hand2[1][2][0][0].int():
                     biggestHands = [hand2] + t
                    
                 else:
@@ -376,7 +370,7 @@ def generateGames(players, deck, number, knownHands,CardOnTable, gameNO):
                     biggestHands = [hand1] + t
                     
                 elif hand1[1][2][0][0].int() < hand2[1][2][0][0].int():
-                    biggestHands = [hand1] + t
+                    biggestHands = [hand2] + t
                     
                 else:
                     currentCard = 0
@@ -411,7 +405,7 @@ def generateGames(players, deck, number, knownHands,CardOnTable, gameNO):
                         biggestHands = [hand2] + t
                         
                     else:
-                        if hand1[1][2][2].int() > hand2[1][2][2].int():
+                        if hand1[1][2][2][0].int() > hand2[1][2][2][0].int():
                             biggestHands = [hand1] + t
                            
                         else:
@@ -675,7 +669,7 @@ if t == 'y':
     
 
 
-NUMBER_OF_GAMES = 10001
+NUMBER_OF_GAMES = 30001
 for i in range(1, NUMBER_OF_GAMES):
     winner = generateGames(players,deck,number,knownMembersCards, Cards_On_Table, i)
     pct = 1 / len(winner)
@@ -685,4 +679,4 @@ for i in range(1, NUMBER_OF_GAMES):
     # print(f"GAME #{i} : Winner - {winner}")
 
 for i,x in enumerate(Winners):
-    print(f"Player #{i+1}: {(math.trunc(x*1000/ NUMBER_OF_GAMES))/10}%")
+    print(f"Player #{i+1}: {(math.trunc(x*10000/ NUMBER_OF_GAMES))/100}%")

@@ -1,6 +1,6 @@
 # > How many players are at the table?
 # ex: 6
-9
+4
 # > How many players' cards you want to evaluate?
 # ex: 
 # ---------------------------------------------------------------
@@ -8,10 +8,11 @@
 # Ah Kd
 # 10c 2s
 # ---------------------------------------------------------------
-3
-10h 5h 
-Kh Qs
-Ks 9d
+4
+Ad 8c
+5d 5c
+Js 9d
+Kd Qh
 # > In what state is the game now?
 # > Pre-Flop (No input, chooses 5 random cards)
 # > Flop (Input 3 cards, chooses 2 random cards)
@@ -30,4 +31,5 @@ Pre-Flop
 # ---------------------------------------------------------------
 # y
 # 10d 9h
-n
+y
+Qd 7s

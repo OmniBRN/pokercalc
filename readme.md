@@ -20,9 +20,8 @@ So when the input file is finished you then run it as so: `./inputscript < input
 
 I enjoy playing poker and I don't really enjoy the services the internet provides when it comes to evaluation of poker hands. So I decided it could be fun to write my own, since it also helps me with starting a "Project" and finishing it.
 
-It's basically finished and I think I caught most of the bugs.
+I added a burned pile and fixed many bugs, and now the evaluation is pretty much identical with other websites.
 
 ## Anything Left?
 
-I'd say the only thing left to add is a "burned pile" so that the cards other players have not played are taken into account when generating the random cards.
-Until then the chances are pretty good, but when compared to "Real Poker Tournament" evaluations, they are going to be at best %1 off, or maybe completely off.
+Adding a GUI would be cool, depends on how I feel
